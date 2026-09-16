@@ -10,7 +10,7 @@ A poller calls the Soroban RPC's `getEvents` on an interval, starting from a sav
 
 ## Requirements
 
-- Node.js 20+
+- Node.js v22.12+
 
 ## Setup
 
