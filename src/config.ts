@@ -18,6 +18,15 @@ export const config = {
   pollIntervalMs: Number(process.env.POLL_INTERVAL_MS ?? 5000),
   eventsBackfillLedgers: Number(process.env.EVENTS_BACKFILL_LEDGERS ?? 1000),
   corsOrigins: process.env.CORS_ORIGINS
-    ? process.env.CORS_ORIGINS.split(",").map((s) => s.trim())
-    : true,
+    ? process.env.CORS_ORIGINS.split(",")
+        .map((s) => s.trim())
+        .filter(Boolean)
+    : [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:4000",
+        "http://127.0.0.1:4000",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+      ],
 };
