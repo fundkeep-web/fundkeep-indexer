@@ -33,6 +33,7 @@ fs.mkdirSync(path.dirname(config.dbPath), { recursive: true });
 
 export const db = new Database(config.dbPath);
 db.pragma("journal_mode = WAL");
+db.pragma("busy_timeout = 3000");
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS goals (

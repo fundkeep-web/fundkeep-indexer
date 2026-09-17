@@ -42,6 +42,13 @@ npm test              # vitest
 npm run typecheck      # tsc --noEmit
 ```
 
+## Concurrency & Database Design
+
+The indexer uses `better-sqlite3` configured in **WAL (Write-Ahead Logging)** mode (`PRAGMA journal_mode = WAL`) alongside `PRAGMA busy_timeout = 3000`.
+
+- **WAL Mode**: Readers do not block writers, and writers do not block readers. This allows high-throughput concurrent API reads from the frontend while the background event poller writes new chain records.
+- **Busy Timeout**: Prevents immediate `SQLITE_BUSY` throws by letting concurrent lock contention gracefully wait up to 3000ms before erroring.
+
 ## Deploying
 
 Runs as a normal long-running Node service (e.g. Render): build command `npm install && npm run build`, start command `npm start`. Point `DB_PATH` at a persistent disk if the platform doesn't give you one by default — otherwise the SQLite file (and the indexer's sync cursor) resets on every deploy.
