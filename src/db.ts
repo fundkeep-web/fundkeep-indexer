@@ -70,6 +70,14 @@ db.exec(`
   );
 
   INSERT OR IGNORE INTO sync_state (id, cursor, last_ledger) VALUES (1, NULL, 0);
+
+  CREATE TABLE IF NOT EXISTS goal_metadata (
+    goal_id INTEGER NOT NULL,
+    owner TEXT NOT NULL,
+    title TEXT,
+    category TEXT,
+    PRIMARY KEY (goal_id, owner)
+  );
 `);
 
 export function getSyncState(): { cursor: string | null; lastLedger: number } {
@@ -145,10 +153,48 @@ export function getGoal(goalId: number): GoalRow | undefined {
     | undefined;
 }
 
+export function getGoalByOwnerAndId(
+  owner: string,
+  goalId: number
+): GoalRow | undefined {
+  return db
+    .prepare("SELECT * FROM goals WHERE owner = ? AND goal_id = ?")
+    .get(owner, goalId) as GoalRow | undefined;
+}
+
 export function getGoalsByOwner(owner: string): GoalRow[] {
   return db
     .prepare("SELECT * FROM goals WHERE owner = ? ORDER BY goal_id ASC")
     .all(owner) as GoalRow[];
+}
+
+export function setGoalMetadata(params: {
+  goalId: number;
+  owner: string;
+  title?: string | null;
+  category?: string | null;
+}): void {
+  db.prepare(
+    `INSERT INTO goal_metadata (goal_id, owner, title, category)
+     VALUES (?, ?, ?, ?)
+     ON CONFLICT(goal_id, owner) DO UPDATE SET
+       title = COALESCE(excluded.title, goal_metadata.title),
+       category = COALESCE(excluded.category, goal_metadata.category)`
+  ).run(
+    params.goalId,
+    params.owner,
+    params.title ?? null,
+    params.category ?? null
+  );
+}
+
+export function getGoalMetadata(
+  owner: string,
+  goalId: number
+): { title: string | null; category: string | null } | undefined {
+  return db
+    .prepare("SELECT title, category FROM goal_metadata WHERE owner = ? AND goal_id = ?")
+    .get(owner, goalId) as { title: string | null; category: string | null } | undefined;
 }
 
 export function insertActivity(entry: {
