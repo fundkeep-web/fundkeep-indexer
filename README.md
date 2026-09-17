@@ -32,6 +32,8 @@ npm run dev
 
 See [`.env.example`](.env.example). `CONTRACT_ID` is the only required one; everything else has a sane default for testnet.
 
+- `CORS_ORIGINS`: Comma-separated list of approved origins allowed to interact with the API in browsers (e.g. `https://fundkeep.app,http://localhost:3000`). If omitted, defaults to local development origins (`http://localhost:3000`, `http://127.0.0.1:3000`, etc.). Unapproved origins are safely rejected without returning cross-origin access headers. Requests without an `Origin` header (e.g. backend curl, server-to-server) remain permitted.
+
 ## Scripts
 
 ```bash
