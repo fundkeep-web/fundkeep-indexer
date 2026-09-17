@@ -1,6 +1,6 @@
-import { rpc } from "@stellar/stellar-sdk";
 import { config } from "./config.js";
 import { decodeEvent, type DecodedEvent } from "./events.js";
+import { rpcServer as server } from "./rpc.js";
 import {
   applyDeposit,
   applyUnlock,
@@ -11,10 +11,6 @@ import {
   insertGoal,
   setSyncState,
 } from "./db.js";
-
-const server = new rpc.Server(config.rpcUrl, {
-  allowHttp: config.rpcUrl.startsWith("http://"),
-});
 
 function applyEvent(event: DecodedEvent): void {
   switch (event.kind) {
