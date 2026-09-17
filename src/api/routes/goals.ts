@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { StrKey } from "@stellar/stellar-sdk";
 import { getGoalsByOwner, type GoalRow } from "../../db.js";
 
 export const goalsRouter = Router();
@@ -19,6 +20,10 @@ function serializeGoal(row: GoalRow) {
 }
 
 goalsRouter.get("/goals/:owner", (req, res) => {
-  const goals = getGoalsByOwner(req.params.owner).map(serializeGoal);
+  const owner = req.params.owner;
+  if (!owner || !StrKey.isValidEd25519PublicKey(owner)) {
+    return res.status(400).json({ error: "Invalid owner address" });
+  }
+  const goals = getGoalsByOwner(owner).map(serializeGoal);
   res.json({ goals });
 });
