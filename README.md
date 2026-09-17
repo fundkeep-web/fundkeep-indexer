@@ -35,12 +35,29 @@ See [`.env.example`](.env.example). `CONTRACT_ID` is the only required one; ever
 ## Scripts
 
 ```bash
-npm run dev        # tsx watch mode
-npm run build       # compile to dist/
-npm start            # run the compiled build
+npm run dev           # tsx watch mode
+npm run build         # compile to dist/
+npm start             # run the compiled build
 npm test              # vitest
-npm run typecheck      # tsc --noEmit
+npm run typecheck     # tsc --noEmit
+npm run keeper        # run automatic deadline unlock keeper daemon
+npm run keeper:once   # run keeper in one-shot execution mode
 ```
+
+## Keeper Bot (Automated Deadline Unlocks)
+
+The indexer includes an automated keeper script at `scripts/keeper.ts` that monitors goals for expired deadlines and triggers `check_deadline` on-chain:
+
+1. Configure `KEEPER_SECRET_KEY` in your `.env` (a funded Stellar account secret key on Testnet).
+2. Start the keeper:
+   ```bash
+   npm run keeper
+   ```
+   Or run on a cron job or container schedule with:
+   ```bash
+   npm run keeper:once
+   ```
+3. If `KEEPER_SECRET_KEY` is omitted, the script runs in safe **dry-run** inspection mode, identifying overdue goals without submitting on-chain transactions.
 
 ## Deploying
 

@@ -7,6 +7,7 @@ import {
   getActivityByOwner,
   getGoal,
   getGoalsByOwner,
+  getOverdueLockedGoals,
   getSyncState,
   insertActivity,
   insertGoal,
@@ -105,6 +106,43 @@ describe("goals", () => {
     const goal = getGoal(2);
     expect(goal?.withdrawn).toBe(1);
     expect(goal?.current_amount).toBe("0");
+  });
+
+  it("filters overdue locked goals correctly", () => {
+    // Goal 1: Overdue & Locked (should match)
+    insertGoal({
+      goalId: 1,
+      owner: OWNER,
+      token: TOKEN,
+      targetAmount: 100_000_000n,
+      deadline: 1_000n,
+      ledger: 10,
+    });
+
+    // Goal 2: Future & Locked (should NOT match)
+    insertGoal({
+      goalId: 2,
+      owner: OWNER,
+      token: TOKEN,
+      targetAmount: 100_000_000n,
+      deadline: 5_000n,
+      ledger: 10,
+    });
+
+    // Goal 3: Overdue but Unlocked (should NOT match)
+    insertGoal({
+      goalId: 3,
+      owner: OWNER,
+      token: TOKEN,
+      targetAmount: 100_000_000n,
+      deadline: 800n,
+      ledger: 10,
+    });
+    applyUnlock({ goalId: 3, ledger: 11 });
+
+    const overdue = getOverdueLockedGoals(2_000n);
+    expect(overdue).toHaveLength(1);
+    expect(overdue[0].goal_id).toBe(1);
   });
 
   it("getGoalsByOwner returns only that owner's goals, ordered by id", () => {
