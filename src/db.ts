@@ -173,10 +173,21 @@ export function insertActivity(entry: {
   );
 }
 
-export function getActivityByOwner(owner: string, limit = 100): ActivityRow[] {
+export function getActivityCountByOwner(owner: string): number {
+  const row = db
+    .prepare("SELECT COUNT(*) as count FROM activity WHERE owner = ?")
+    .get(owner) as { count: number } | undefined;
+  return row?.count ?? 0;
+}
+
+export function getActivityByOwner(
+  owner: string,
+  limit = 100,
+  offset = 0
+): ActivityRow[] {
   return db
     .prepare(
-      "SELECT * FROM activity WHERE owner = ? ORDER BY id DESC LIMIT ?"
+      "SELECT * FROM activity WHERE owner = ? ORDER BY id DESC LIMIT ? OFFSET ?"
     )
-    .all(owner, limit) as ActivityRow[];
+    .all(owner, limit, offset) as ActivityRow[];
 }

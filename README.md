@@ -26,7 +26,7 @@ npm run dev
 |---|---|
 | `GET /health` | `{ ok, lastLedger }` |
 | `GET /api/goals/:owner` | All indexed goals for a Stellar address |
-| `GET /api/activity/:owner?limit=100` | Activity log for a Stellar address, newest first |
+| `GET /api/activity/:owner?limit=100&offset=0` | Paginated activity log for a Stellar address, newest first. Returns `{ activity, total, hasMore }`. |
 
 ## Environment Variables
 
