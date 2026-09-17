@@ -24,7 +24,7 @@ npm run dev
 
 | Endpoint | Description |
 |---|---|
-| `GET /health` | `{ ok, lastLedger }` |
+| `GET /health` | `{ status: "ok" \| "degraded", lastIndexedLedger, currentLedger, lagLedgers }` |
 | `GET /api/goals/:owner` | All indexed goals for a Stellar address |
 | `GET /api/activity/:owner?limit=100` | Activity log for a Stellar address, newest first |
 
