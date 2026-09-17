@@ -145,6 +145,15 @@ export function getGoal(goalId: number): GoalRow | undefined {
     | undefined;
 }
 
+export function getGoalByOwnerAndId(
+  owner: string,
+  goalId: number
+): GoalRow | undefined {
+  return db
+    .prepare("SELECT * FROM goals WHERE owner = ? AND goal_id = ?")
+    .get(owner, goalId) as GoalRow | undefined;
+}
+
 export function getGoalsByOwner(owner: string): GoalRow[] {
   return db
     .prepare("SELECT * FROM goals WHERE owner = ? ORDER BY goal_id ASC")

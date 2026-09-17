@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getGoalsByOwner, type GoalRow } from "../../db.js";
+import { getGoalByOwnerAndId, getGoalsByOwner, type GoalRow } from "../../db.js";
 
 export const goalsRouter = Router();
 
@@ -21,4 +21,18 @@ function serializeGoal(row: GoalRow) {
 goalsRouter.get("/goals/:owner", (req, res) => {
   const goals = getGoalsByOwner(req.params.owner).map(serializeGoal);
   res.json({ goals });
+});
+
+goalsRouter.get("/goals/:owner/:goalId", (req, res) => {
+  const goalId = Number(req.params.goalId);
+  if (isNaN(goalId)) {
+    return res.status(404).json({ error: "Goal not found" });
+  }
+
+  const goal = getGoalByOwnerAndId(req.params.owner, goalId);
+  if (!goal) {
+    return res.status(404).json({ error: "Goal not found" });
+  }
+
+  res.json(serializeGoal(goal));
 });
