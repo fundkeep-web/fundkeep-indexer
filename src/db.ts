@@ -151,6 +151,14 @@ export function getGoalsByOwner(owner: string): GoalRow[] {
     .all(owner) as GoalRow[];
 }
 
+export function getOverdueLockedGoals(nowTimestampSeconds: number | bigint): GoalRow[] {
+  return db
+    .prepare(
+      "SELECT * FROM goals WHERE CAST(deadline AS INTEGER) <= ? AND unlocked = 0 AND withdrawn = 0 ORDER BY deadline ASC"
+    )
+    .all(Number(nowTimestampSeconds)) as GoalRow[];
+}
+
 export function insertActivity(entry: {
   goalId: number;
   owner: string;
